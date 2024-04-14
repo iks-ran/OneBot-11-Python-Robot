@@ -339,7 +339,7 @@ class OneBot:
         message_type = self.Commands[cmd_name]["extra_params"].get("message_type", "")
         target_id = self.Commands[cmd_name]["extra_params"].get("target_id", 0)
         send = self.Commands[cmd_name]["extra_params"].get("send", False)
-        message, *_, type  = self.HandleCommand(cmd_name, "", message_type, target_id, 0, send_message=False)
+        message, *_, type  = self.HandleCommand(cmd_name, "", message_type, 0, target_id, 0, send_message=False)
         with self.COMMAND_LOCK:
             commands = self.Commands
             cmd_dict = commands[cmd_name]
@@ -388,7 +388,7 @@ class OneBot:
         for cmd_name in self.Commands.keys():
             if self.Commands[cmd_name]["CommandType"] == "Post":
                 logger.info("Handle post command: {}".format(cmd_name))
-                self.HandleCommand(cmd_name, "", "", 0, 0, False)
+                self.HandleCommand(cmd_name, "", "", 0, 0, 0, False)
             
     def run(self):
         
