@@ -1,4 +1,4 @@
-from utils import handle_exceptions, logger
+from utils import handle_exceptions, logger, String2Dict
 from transformers import CLIPTokenizer
 from cmds.utils import SaveImage
 import traceback
@@ -9,10 +9,6 @@ import random
 
 MAX_SEED = np.iinfo(np.int32).max
 TOKENIZER = CLIPTokenizer.from_pretrained("openai/clip-vit-large-patch14")
-
-def String2Dict(string: str):
-    items = string.split(";&amp;")
-    return {item.split("=")[0]: item.split("=")[1] for item in items}
 
 @handle_exceptions
 def PreprocessRawinput(raw_input: str, 
@@ -26,7 +22,7 @@ def PreprocessRawinput(raw_input: str,
                        return_url: bool=True):
     logger.debug("Get raw text: {}".format(raw_input))
     try:
-        cfg = String2Dict(raw_input)
+        cfg = String2Dict(raw_input, "prompt")
         prompt = cfg.get("prompt", "")
         negative_prompt = cfg.get("negative_prompt", negative_prompt)
         quality = cfg.get("quality", quality)

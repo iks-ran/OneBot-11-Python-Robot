@@ -1,6 +1,8 @@
-from utils import handle_exceptions, logger
+from utils import handle_exceptions, logger, String2Dict
 import traceback
+import requests
 import openai
+import json
 
 client = openai.OpenAI(api_key="")
 
@@ -122,3 +124,22 @@ def ConditionalChat(bot,
         return new_target_history
     return UpdateChatHistory(bot, target, cmd_name, new_target_history, chat_history) + \
            f"\n|当前累计 token: {total_tokens}"
+           
+@handle_exceptions
+def Translate(api_url: str,
+              message: str, 
+              source_lang: str="auto", 
+              target_lang: str="EN"):
+    cfg = String2Dict(message, default_key="text")
+    text = cfg["text"]
+    source_lang = cfg.get("source_lang", source_lang)
+    target_lang = cfg.get("target_lang", target_lang)
+    postdata = json.dumps({"text": text, "source_lang": source_lang, "target_lang": target_lang})
+    logger.debug("Translating [{}] from [{}] to [{}]".format(text, source_lang, target_lang))
+    
+    r = requests.post(api_url, data=postdata)
+    logger.debug("Translation response: {}".format(r.text))
+    if r.status_code == 200:
+        return r.json()["data"] + "\n-----\n" + "\n-----\n".join(r.json()["alternatives"])
+    else:
+        return "翻译失败喵, {}".format(r.text)

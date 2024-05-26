@@ -143,11 +143,4 @@ def TerminalCommand(bot,
     result = out.decode("utf-8") + err.decode("utf-8")
     
     logger.debug("Terminal command executed, {}".format(result))
-    return result
-
-@handle_exceptions
-def Restart(bot):
-    logger.info("Restart called")
-    bot.stop()
-    return "已重启"
-    
+    return result.strip("\n")

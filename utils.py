@@ -104,4 +104,13 @@ def unformat_dict_keys(d, sep=".", rep="§"):
         current_dict[keys[-1]] = value
     return original_dict
 
+@handle_exceptions
+def String2Dict(string: str, 
+                default_key: str, 
+                sep: str=";&amp;"):
+    if sep not in string and default_key not in string:
+        return {default_key: string}
+    items = string.split(sep)
+    return {item.split("=")[0]: item.split("=")[1] for item in items}
+
 logger = setup_logger("OneBot.log", False)

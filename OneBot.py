@@ -221,6 +221,8 @@ class OneBot:
             return [self.PreprocessMessage(m, t) for m, t in message.items()]
         
         if type == "text":
+            if message == "":
+                message = " "
             return {"type": "text", "data": {"text": message}}
         if type in ["image", "record", "video", "file"]:
             if os.path.exists(message):
@@ -266,14 +268,17 @@ class OneBot:
         logger.debug("Receive message: \n{}".format(json.dumps(meta_message, indent=2)))
         
         message_type = meta_message.get("message_type", None)
-        if not message_type:
-            logger.warning("Message type unsupported: {}".format(message_type))
+        message_list = meta_message.get("message", [])
+        if not (message_type and message_list):
+            logger.warning("Not a message event")
             return
         message_id = meta_message["message_id"]
         sender_id = meta_message["sender"]["user_id"]
         group_id = meta_message.get("group_id", "")
-        type = meta_message["message"][0]["type"]
-        if type != "text":
+        type = message_list[0]["type"]
+        if not (type in ["text", "face", "image", "record", "video", "at", "rps", "dice", "shake", 
+                         "poke", "share", "contact", "location", "music", "reply", "forward", "node",
+                         "xml", "json"]):
             logger.warning("Type unsupported: {}".format(type))
             return
         message = meta_message["raw_message"]
